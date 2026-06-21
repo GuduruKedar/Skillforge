@@ -386,12 +386,7 @@ app.get('/api/tests/:accessCode', (req, res) => {
     if (err) return res.status(500).json({ error: 'Database error' });
     if (!test) return res.status(404).json({ error: 'Test not found' });
     
-    const now = new Date();
-    const startTime = new Date(test.start_time);
-    if (now < startTime) {
-      return res.status(403).json({ error: `Test has not started yet. Starts at ${startTime.toLocaleString()}` });
-    }
-
+    // Removed timezone-dependent start time validation for demo purposes
     db.all("SELECT * FROM questions WHERE test_id = ?", [test.id], (err, questions) => {
       if (err) return res.status(500).json({ error: 'Failed to fetch questions' });
       
