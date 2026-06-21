@@ -45,7 +45,7 @@ export default function Login({ setUser }) {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/request-otp', { 
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/request-otp`, { 
         email, 
         role: selectedRole ? selectedRole.id : undefined 
       });
@@ -65,7 +65,7 @@ export default function Login({ setUser }) {
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/verify-auth', { 
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/verify-auth`, { 
         authMode, 
         email, 
         password, 

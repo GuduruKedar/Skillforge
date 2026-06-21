@@ -19,9 +19,9 @@ export default function CollegeDashboard({ user }) {
 
   const fetchData = async () => {
     try {
-      const stuRes = await axios.get(`http://localhost:5000/api/college/students?college_id=${user.id}`);
+      const stuRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/college/students?college_id=${user.id}`);
       setStudents(stuRes.data);
-      const testRes = await axios.get('http://localhost:5000/api/admin/tests');
+      const testRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tests`);
       setAllTests(testRes.data);
     } catch (err) {
       console.error('Error fetching college data', err);

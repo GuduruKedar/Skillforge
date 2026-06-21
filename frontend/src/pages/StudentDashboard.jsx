@@ -23,9 +23,9 @@ export default function StudentDashboard({ user }) {
 
   const fetchData = async () => {
     try {
-      const testsRes = await axios.get('http://localhost:5000/api/student/tests');
+      const testsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/student/tests`);
       setTests(testsRes.data);
-      const resultsRes = await axios.get(`http://localhost:5000/api/student/results?user_id=${user.id}`);
+      const resultsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/student/results?user_id=${user.id}`);
       setResults(resultsRes.data);
     } catch (err) {
       console.error('Error fetching data', err);
@@ -35,7 +35,7 @@ export default function StudentDashboard({ user }) {
   const handleJoinByCode = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.get(`http://localhost:5000/api/tests/${accessCode}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tests/${accessCode}`);
       navigate(`/exam/${accessCode}`, { state: { testData: res.data } });
     } catch (err) {
       alert(err.response?.data?.error || 'Test not found');
@@ -44,7 +44,7 @@ export default function StudentDashboard({ user }) {
 
   const handleJoinDirectly = async (code) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/tests/${code}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tests/${code}`);
       navigate(`/exam/${code}`, { state: { testData: res.data } });
     } catch (err) {
       alert(err.response?.data?.error || 'Test not found');

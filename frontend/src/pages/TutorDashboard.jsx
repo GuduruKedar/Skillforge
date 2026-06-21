@@ -30,9 +30,9 @@ export default function TutorDashboard({ user }) {
 
   const fetchData = async () => {
     try {
-      const testsRes = await axios.get('http://localhost:5000/api/admin/tests'); // Assuming tutor can see tests
+      const testsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tests`); // Assuming tutor can see tests
       setTests(testsRes.data);
-      const subRes = await axios.get('http://localhost:5000/api/tutor/submissions');
+      const subRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tutor/submissions`);
       setSubmissions(subRes.data);
     } catch (err) {
       console.error('Error fetching data', err);
@@ -42,7 +42,7 @@ export default function TutorDashboard({ user }) {
   const createTest = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/tests', newTest);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tests`, newTest);
       alert('Mock Test created successfully!');
       setNewTest({ access_code: '', title: '', start_time: '', duration_minutes: 60 });
       fetchData();
@@ -52,7 +52,7 @@ export default function TutorDashboard({ user }) {
   const addQuestion = async (e) => {
     if (e) e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/questions', newQuestion);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/questions`, newQuestion);
       alert('Question added to test!');
       setNewQuestion({ test_id: '', title: '', difficulty: 'Easy', description: '', timeComplexity: 'O(N)', spaceComplexity: 'O(1)', examples: [{input: '', output: ''}], defaultCode: { python: '', java: '', javascript: '', cpp: '', csharp: '' } });
     } catch (err) { alert('Failed to add question'); }
@@ -61,7 +61,7 @@ export default function TutorDashboard({ user }) {
   const addMcq = async (e) => {
     if (e) e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/mcq', {
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/mcq`, {
         ...newMcq,
         options: [newMcq.options[1], newMcq.options[2], newMcq.options[3], newMcq.options[4]]
       });

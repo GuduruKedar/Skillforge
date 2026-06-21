@@ -136,7 +136,7 @@ export default function ExamIDE() {
 
     try {
       const encryptedPayload = encryptPayload(code);
-      const response = await axios.post('http://localhost:5000/execute', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/execute`, {
         language,
         payload: encryptedPayload
       });
@@ -168,7 +168,7 @@ export default function ExamIDE() {
         return;
       }
       
-      const res = await axios.post('http://localhost:5000/api/student/submit', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/student/submit`, {
         user_id: user.id,
         test_id: testInfo.id,
         status: 'Submitted',

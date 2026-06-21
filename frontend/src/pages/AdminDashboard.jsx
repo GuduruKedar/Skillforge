@@ -44,9 +44,9 @@ export default function AdminDashboard({ user }) {
 
   const fetchData = async () => {
     try {
-      const testsRes = await axios.get('http://localhost:5000/api/admin/tests');
+      const testsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tests`);
       setTests(testsRes.data);
-      const usersRes = await axios.get('http://localhost:5000/api/admin/users');
+      const usersRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users`);
       setUsers(usersRes.data);
     } catch (err) {
       console.error('Error fetching data', err);
@@ -56,7 +56,7 @@ export default function AdminDashboard({ user }) {
   const createCollege = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/users', { email: newCollege.email, username: newCollege.name, role: 'college' });
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users`, { email: newCollege.email, username: newCollege.name, role: 'college' });
       alert('College created successfully!');
       setNewCollege({ name: '', email: '' });
       fetchData();
@@ -66,7 +66,7 @@ export default function AdminDashboard({ user }) {
   const createTutor = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/users', { email: newTutor.email, username: newTutor.name, role: 'tutor', college_id: newTutor.college_id });
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users`, { email: newTutor.email, username: newTutor.name, role: 'tutor', college_id: newTutor.college_id });
       alert('Tutor created successfully!');
       setNewTutor({ name: '', email: '', college_id: '' });
       fetchData();
@@ -76,7 +76,7 @@ export default function AdminDashboard({ user }) {
   const createTest = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/tests', newTest);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tests`, newTest);
       alert('Test created successfully!');
       setNewTest({ access_code: '', title: '', start_time: '', duration_minutes: 60 });
       fetchData();
@@ -86,7 +86,7 @@ export default function AdminDashboard({ user }) {
   const addQuestion = async (e) => {
     if (e) e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/questions', newQuestion);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/questions`, newQuestion);
       alert('Question added successfully!');
       setNewQuestion({ test_id: '', title: '', difficulty: 'Easy', description: '', timeComplexity: 'O(N)', spaceComplexity: 'O(1)', examples: [{input: '', output: ''}], defaultCode: { python: '', java: '', javascript: '', cpp: '', csharp: '' } });
     } catch (err) { alert('Failed to add question'); }
@@ -95,7 +95,7 @@ export default function AdminDashboard({ user }) {
   const addMcq = async (e) => {
     if (e) e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/mcq', {
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/mcq`, {
         ...newMcq,
         options: [newMcq.options[1], newMcq.options[2], newMcq.options[3], newMcq.options[4]]
       });
@@ -412,7 +412,7 @@ export default function AdminDashboard({ user }) {
             <form onSubmit={async (e) => {
               e.preventDefault();
               try {
-                await axios.post('http://localhost:5000/api/admin/users', { ...newStudent, college_id: selectedCollegeForStudent, role: 'student', username: newStudent.name });
+                await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users`, { ...newStudent, college_id: selectedCollegeForStudent, role: 'student', username: newStudent.name });
                 alert('Student added!');
                 fetchData();
                 setNewStudent({ name: '', email: '', registration_no: '', phone: '', college_id: '' });
@@ -449,7 +449,7 @@ export default function AdminDashboard({ user }) {
                     }));
 
                     try {
-                      await axios.post('http://localhost:5000/api/admin/users/bulk', { users: mappedUsers });
+                      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users/bulk`, { users: mappedUsers });
                       alert(`Successfully uploaded ${mappedUsers.length} students!`);
                       fetchData();
                       setIsAddStudentModalOpen(false);
