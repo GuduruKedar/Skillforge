@@ -24,7 +24,10 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.SMTP_EMAIL,
     pass: process.env.SMTP_PASSWORD
-  }
+  },
+  connectionTimeout: 5000,
+  greetingTimeout: 5000,
+  socketTimeout: 5000
 });
 
 const TEMP_DIR = path.join(__dirname, 'temp');
