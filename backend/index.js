@@ -20,10 +20,12 @@ const db = require('./db');
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD
+    pass: (process.env.SMTP_PASSWORD || '').replace(/\s+/g, '')
   },
   connectionTimeout: 5000,
   greetingTimeout: 5000,
@@ -204,11 +206,10 @@ app.post('/api/request-otp', (req, res) => {
       };
       transporter.sendMail(mailOptions, (mailErr) => {
         if (mailErr) {
-          console.log(`[DEMO MODE] Email failed. OTP is: ${otp}`);
-          // Fallback for interview purposes so they aren't blocked!
-          return res.json({ message: `[DEMO MODE] Email server blocked request. Your OTP is: ${otp}` });
+          console.error("NODEMAILER ERROR:", mailErr);
+          return res.status(500).json({ error: `Email Error: ${mailErr.message}` });
         }
-        res.json({ message: 'OTP sent to your email' });
+        res.json({ message: 'OTP sent securely to your email' });
       });
     };
 
