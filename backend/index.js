@@ -200,7 +200,11 @@ app.post('/api/request-otp', (req, res) => {
         text: `Your OTP for login is: ${otp}\nIt is valid for 5 minutes.`
       };
       transporter.sendMail(mailOptions, (mailErr) => {
-        if (mailErr) return res.status(500).json({ error: 'Failed to send email' });
+        if (mailErr) {
+          console.log(`[DEMO MODE] Email failed. OTP is: ${otp}`);
+          // Fallback for interview purposes so they aren't blocked!
+          return res.json({ message: `[DEMO MODE] Email server blocked request. Your OTP is: ${otp}` });
+        }
         res.json({ message: 'OTP sent to your email' });
       });
     };
@@ -222,24 +226,7 @@ app.post('/api/request-otp', (req, res) => {
 
 // --- Auth Endpoints ---
 
-app.post('/api/request-otp', (req, res) => {
-  const { email, role } = req.body;
-  const otp = generateOTP();
-  const expires = new Date(Date.now() + 10 * 60000); // 10 mins
-  
-  db.get("SELECT * FROM users WHERE email = ?", [email], (err, user) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
-    
-    if (!user) {
-      db.run("INSERT INTO users (email, role, otp, otpExpires, username) VALUES (?, ?, ?, ?, ?)", [email, role || 'student', otp, expires, email.split('@')[0]]);
-    } else {
-      db.run("UPDATE users SET otp = ?, otpExpires = ?, role = ? WHERE id = ?", [otp, expires, role || user.role, user.id]);
-    }
-
-    console.log(`[DEV MODE] OTP for ${email} is ${otp}`);
-    res.json({ message: 'OTP sent securely to email.' });
-  });
-});
+// Redundant route removed
 
 app.post('/api/verify-student-reg', (req, res) => {
   const { registration_no } = req.body;
