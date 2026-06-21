@@ -1,0 +1,319 @@
+.app-container {
+  --bg-color: #ffffff;
+  --text-primary: #1b2559;
+  --text-secondary: #a3aed1;
+  --border-color: #e2e8f0;
+  --panel-bg: #f8fafc;
+  --success-color: #16a34a;
+  --error-color: #ef4444;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header h1 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.exam-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.select-language, .select-question {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.select-language:hover, .select-question:hover {
+  border-color: #444;
+}
+
+.select-language:focus, .select-question:focus {
+  border-color: var(--text-primary);
+}
+
+.difficulty-badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: 0.75rem;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+
+.diff-easy { color: var(--success-color); border-color: rgba(50, 215, 75, 0.2); }
+.diff-medium { color: #ffd60a; border-color: rgba(255, 214, 10, 0.2); }
+.diff-hard { color: var(--error-color); border-color: rgba(255, 69, 58, 0.2); }
+
+.btn-run {
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.btn-run:hover {
+  opacity: 0.9;
+}
+
+.btn-run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.question-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.question-content {
+  padding: 2rem;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.question-content h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.meta-info {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.meta-info span strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.question-content p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.question-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.question-content pre {
+  background: var(--panel-bg);
+  padding: 1rem 1.25rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.question-content pre strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.code-workspace {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+}
+
+.editor-section, .terminal-section {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-section {
+  flex: 2;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.terminal-section {
+  flex: 1;
+  background: var(--panel-bg);
+}
+
+.section-header {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.metrics {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.metric-badge {
+  color: var(--text-secondary);
+}
+
+.output-content {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.output-content.error {
+  color: var(--error-color);
+}
+
+.loader {
+  border: 2px solid transparent;
+  border-top-color: var(--bg-color);
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast {
+  background: var(--panel-bg);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  animation: slideIn 0.3s forwards, fadeOut 0.3s forwards 2.7s;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+.exam-lock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  padding: 2rem;
+}
+
+.exam-lock-overlay h1 {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--error-color);
+}
+
+.exam-lock-overlay p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 500px;
+  text-align: center;
+  line-height: 1.5;
+}
