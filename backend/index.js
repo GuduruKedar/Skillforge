@@ -7,6 +7,9 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { performance } = require('perf_hooks');
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'skillforge_super_secret_key_2026';
 
 
 const app = express();
@@ -238,27 +241,77 @@ app.post('/api/request-otp', (req, res) => {
   });
 });
 
+app.post('/api/verify-student-reg', (req, res) => {
+  const { registration_no } = req.body;
+  if (!registration_no) return res.status(400).json({ error: 'Registration number is required' });
+
+  db.get("SELECT * FROM allowed_students WHERE registration_no = ?", [registration_no], (err, row) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    if (!row) return res.status(404).json({ error: 'Registration number not found in college records. Please contact your College Administrator.' });
+    if (row.is_registered) return res.status(400).json({ error: 'This registration number is already registered.' });
+    
+    res.json({ message: 'Verified successfully', studentInfo: { name: row.name, college_id: row.college_id } });
+  });
+});
+
 app.post('/api/verify-auth', (req, res) => {
-  const { authMode, email, password, otp, role } = req.body;
+  const { authMode, email, password, otp, role, registration_no, name, college_id } = req.body;
   
   db.get("SELECT * FROM users WHERE email = ?", [email], (err, user) => {
     if (err) return res.status(500).json({ error: 'Database error' });
-    if (!user) return res.status(404).json({ error: 'User not found' });
     
-    if (!user.otp || user.otp !== otp) return res.status(401).json({ error: 'Invalid OTP' });
-    if (new Date() > new Date(user.otpExpires)) return res.status(401).json({ error: 'OTP expired' });
-
-    if (authMode === 'signin') {
-      if (user.password && user.password !== password) {
-        return res.status(401).json({ error: 'Invalid password' });
+    if (authMode === 'signup') {
+      if (['admin', 'college', 'tutor'].includes(role)) {
+        return res.status(403).json({ error: 'Registration disabled from public UI. Please contact the system owner.' });
       }
-      db.run("UPDATE users SET otp = NULL, otpExpires = NULL WHERE id = ?", [user.id]);
-      res.json({ message: 'Login successful', user });
+      if (role === 'student' && !registration_no) {
+        return res.status(400).json({ error: 'Registration number required for student sign up.' });
+      }
+      
+      if (user) {
+        if (!user.otp || user.otp !== otp) return res.status(401).json({ error: 'Invalid OTP' });
+        if (new Date() > new Date(user.otpExpires)) return res.status(401).json({ error: 'OTP expired' });
+        
+        db.run("UPDATE users SET password = ?, role = ?, registration_no = ?, username = ?, college_id = ?, otp = NULL, otpExpires = NULL WHERE id = ?", 
+          [password, role, registration_no, name, college_id, user.id], (err) => {
+          if (err) return res.status(500).json({ error: 'Failed to complete signup' });
+          
+          if (registration_no) {
+            db.run("UPDATE allowed_students SET is_registered = 1 WHERE registration_no = ?", [registration_no]);
+          }
+          
+          const token = jwt.sign({ id: user.id, email: user.email, role }, JWT_SECRET, { expiresIn: '8h' });
+          db.run("INSERT INTO login_history (user_id, email, status) VALUES (?, ?, ?)", [user.id, user.email, 'SUCCESS']);
+          
+          res.json({ message: 'Account created successfully', token, user: { ...user, password, role, username: name } });
+        });
+      } else {
+        return res.status(400).json({ error: 'OTP flow violated. No user record found.' });
+      }
     } else {
-      db.run("UPDATE users SET password = ?, role = ?, otp = NULL, otpExpires = NULL WHERE id = ?", [password, role, user.id], (err) => {
-        if (err) return res.status(500).json({ error: 'Failed to complete signup' });
-        res.json({ message: 'Account created successfully', user: { ...user, password, role } });
-      });
+      // SIGN IN
+      if (!user) {
+        db.run("INSERT INTO login_history (email, status) VALUES (?, ?)", [email, 'FAILED_USER_NOT_FOUND']);
+        return res.status(404).json({ error: 'Account not found' });
+      }
+      if (user.password && user.password !== password) {
+        db.run("INSERT INTO login_history (user_id, email, status) VALUES (?, ?, ?)", [user.id, email, 'FAILED_INVALID_PASSWORD']);
+        return res.status(401).json({ error: 'Incorrect password' });
+      }
+      if (!user.otp || user.otp !== otp) {
+        db.run("INSERT INTO login_history (user_id, email, status) VALUES (?, ?, ?)", [user.id, email, 'FAILED_INVALID_OTP']);
+        return res.status(401).json({ error: 'Invalid OTP' });
+      }
+      if (new Date() > new Date(user.otpExpires)) {
+        return res.status(401).json({ error: 'OTP expired' });
+      }
+
+      db.run("UPDATE users SET otp = NULL, otpExpires = NULL WHERE id = ?", [user.id]);
+      
+      const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '8h' });
+      db.run("INSERT INTO login_history (user_id, email, status) VALUES (?, ?, ?)", [user.id, user.email, 'SUCCESS']);
+      
+      res.json({ message: 'Login successful', token, user });
     }
   });
 });

@@ -12,6 +12,7 @@ const initDb = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
         email TEXT UNIQUE NOT NULL,
+        password TEXT,
         role TEXT NOT NULL,
         otp TEXT,
         otpExpires DATETIME,
@@ -73,6 +74,32 @@ const initDb = () => {
         FOREIGN KEY(test_id) REFERENCES mock_tests(id)
       )
     `);
+
+    // Login History
+    db.run(`
+      CREATE TABLE IF NOT EXISTS login_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        email TEXT,
+        status TEXT,
+        ip_address TEXT,
+        device TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Allowed Students (For Registration Verification)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS allowed_students (
+        registration_no TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        college_id TEXT NOT NULL,
+        is_registered BOOLEAN DEFAULT 0
+      )
+    `, () => {
+      // Seed a mock student for testing
+      db.run(`INSERT OR IGNORE INTO allowed_students (registration_no, name, college_id) VALUES ('STU-2026-001', 'Kedar Guduru', 'col-123')`);
+    });
   });
 };
 
