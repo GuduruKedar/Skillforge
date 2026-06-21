@@ -206,8 +206,9 @@ app.post('/api/request-otp', (req, res) => {
       };
       transporter.sendMail(mailOptions, (mailErr) => {
         if (mailErr) {
-          console.error("NODEMAILER ERROR:", mailErr);
-          return res.status(500).json({ error: `Email Error: ${mailErr.message}` });
+          console.log(`[DEMO MODE] Email failed. OTP is: ${otp}`);
+          // Fallback for interview purposes so they aren't blocked!
+          return res.json({ message: `[DEMO MODE] Email server blocked request. Your OTP is: ${otp}` });
         }
         res.json({ message: 'OTP sent securely to your email' });
       });
